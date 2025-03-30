@@ -20,7 +20,7 @@ with torch.no_grad():
         if 'description_short' in movie.keys():
             description_short = movie['description_short']
             # print("Calculating embedding for text: {}".format(description_short))
-            store_embedding(description_short, get_embedding(description_short))
+            store_embedding(movie['id'], description_short, get_embedding(description_short))
 
 embedding_time = round(time.time() * 1000) - start_time
 print("Embedding took {} ms".format(embedding_time))
