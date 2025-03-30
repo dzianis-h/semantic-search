@@ -1,0 +1,6 @@
+$ pip install git+https://github.com/huggingface/transformers@v4.49.0-Gemma-3
+pip install --upgrade pip
+pip install torchvision
+pip install urllib3==1.26.6
+
+// pip install transformers torch
