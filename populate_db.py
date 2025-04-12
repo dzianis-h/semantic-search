@@ -14,9 +14,19 @@ with open('movies.json', 'r') as file:
 
 print("Running embedding")
 start_time = round(time.time() * 1000)
+print("Preparing embedding for {} movies".format(len(movies)))
 for movie in movies:
     if 'description' in movie.keys():
-        text = prepare_text(movie['title_be']) + " [SEP] " + prepare_text(movie['description'])
+        # text = (prepare_text(movie['title_be']) + " [SEP] "
+        #         + prepare_text(movie['description']) + " [SEP] "
+        #         + prepare_text(movie['description_short']))
+
+        text = prepare_text(movie['description'])
+        if movie['description'] != movie['description_short']:
+            print(movie['title_be'])
+            print(movie['description'])
+            print(movie['description_short'])
+
         text = re.sub(r'\s+', " ", text).strip()
         # print("Calculating embedding for text: {}".format(description))
         embedding = get_embedding(text)

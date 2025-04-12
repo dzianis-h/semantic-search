@@ -2,7 +2,7 @@ import psycopg2
 
 connection = psycopg2.connect(database="postgres", user='root', password='password', host="localhost", port=5432)
 
-embeddings_dimensions = 256
+embeddings_dimensions = 768
 
 
 def init_db():
