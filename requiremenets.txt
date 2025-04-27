@@ -1,9 +1,14 @@
+blinker==1.9.0
 certifi==2025.1.31
 charset-normalizer==3.4.1
+click==8.1.8
 filelock==3.18.0
+Flask==3.1.0
 fsspec==2025.3.0
 huggingface-hub==0.29.3
 idna==3.10
+importlib_metadata==8.7.0
+itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.2
 mpmath==1.3.0
@@ -11,6 +16,7 @@ networkx==3.2.1
 numpy==2.0.2
 packaging==24.2
 pillow==11.1.0
+psycopg2-binary==2.9.5
 PyYAML==6.0.2
 regex==2024.11.6
 requests==2.32.3
@@ -23,4 +29,5 @@ tqdm==4.67.1
 transformers @ git+https://github.com/huggingface/transformers@0ebd6651acd32c982fee265b23243b89bdb89577
 typing_extensions==4.13.0
 urllib3==1.26.6
-psycopg2-binary==2.9.5
+Werkzeug==3.1.3
+zipp==3.21.0

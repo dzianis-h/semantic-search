@@ -1,22 +1,16 @@
 version: '3'
 services:
-  mongo-atlas:
-    image: mongodb/mongodb-atlas-local:latest
-    container_name: mongodb-atlas
-    ports:
-      - "27017:27017"
-    environment:
-      MONGODB_INITDB_ROOT_USERNAME: root
-      MONGODB_INITDB_ROOT_PASSWORD: password
-      MONGODB_INITDB_DATABASE: semantic-search
-      DO_NOT_TRACK: 1
-
   pgvector:
     image: pgvector/pgvector:0.8.0-pg17
     container_name: pgvector
     ports:
       - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: postgres
+      POSTGRES_DB: kk-vector
+
+volumes:
+  postgres-data:
