@@ -1,4 +1,5 @@
 import os
+import threading
 
 from flask import Flask, request
 
@@ -8,10 +9,7 @@ from semantic_search.service.VectorRepository import VectorRepository
 
 search_service = SearchService(EmbeddingService(), VectorRepository())
 
-# indexing_service.reindex_all()
-# for result in indexing_service.find_closest("увесь свет гэта іллюзія, чалавецтва б'ецца з машынамі"):
-#     print("{}/movie?id={} \tcosine similarity = {}".format(os.environ['HOST'], result[1], result[2]))
-
+# search_service.reindex_all()
 
 app = Flask(__name__)
 @app.route('/semantic-search', methods=['GET'])
@@ -26,12 +24,22 @@ def semantic_search():
     results = search_service.find_closest(prompt, max_results, max_distance)
     return [to_response(x) for x in results]
 
+@app.route('/reindex/all', methods=['GET', 'POST'])
+def reindex():
+    thread = threading.Thread(target=search_service.reindex_all)
+    thread.start()
+    return {
+        'msg': 'Reindexing has started as a background job. Please, wait.',
+    }
+
+
 
 def to_response(result):
     link = "{}/movie?id={}".format(os.environ['HOST'], result[1])
     return {
-        'link': link,
-        'distance': result[2]
+        'distance': result[3],
+        'chunk': result[2],
+        'link': link
     }
 
 app.run(debug=True)

@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from datetime import timedelta
 
 import requests
 
@@ -14,25 +15,46 @@ class SearchService:
         self.vector_repository = vector_repository
         self.movies_link = os.environ['MOVIES_LINK']
 
-    def find_closest(self, prompt, max_results, max_distance):
-        prompt_embedding = self.embedding_service.get_embedding(prompt)
+    def find_closest(self, prompt: str, max_results, max_distance):
+        prompt_embedding = self.embedding_service.get_embeddings(list(prompt))[0]
         return self.vector_repository.semantic_search(prompt_embedding, max_results, max_distance)
 
     def reindex_all(self):
+        start_time = time.time()
+        print('Staring full reindexing....')
         rs = requests.get(self.movies_link)
         if rs.status_code != 200:
             print("Error getting content link, {}".format(rs.status_code))
             return
         movies = json.loads(rs.content)
-        start_time = round(time.time() * 1000)
+        self.vector_repository.truncate_embeddings()
         for movie in movies:
-            if 'description' in movie.keys():
-                text = movie['description']
-                embedding = self.embedding_service.get_embedding(text)
-                self.vector_repository.store_embedding(movie['id'], text, embedding)
+            title_keys = ['title_page', 'title_be', 'title_en', 'title_ru']
+            titles = ''
+            for key in title_keys:
+                if key in movie.keys():
+                    titles = titles + movie[key] + ' | '
+                    break
 
-        embedding_time = round(time.time() * 1000) - start_time
-        print("Full reindexing took {} ms".format(embedding_time))
+            keys = ['description', 'description_short']
+            prompts = []
+            used_keys = []
+            for key in keys:
+                if key in movie.keys():
+                    prompt = movie[key]
+                    if len(prompt) > 35:
+                        if not prompts.__contains__(prompt):
+                            prompts.append(prompt)
+                            used_keys.append(key)
+                        prompt = titles + prompt
+                        if not prompts.__contains__(prompt):
+                            prompts.append(prompt)
+                            used_keys.append('titles_' + key)
 
+            embeddings = self.embedding_service.get_embeddings(prompts)
+            self.vector_repository.store_embeddings(movie['id'], used_keys, prompts, embeddings)
+
+        reindexing_time = timedelta(seconds=time.time() - start_time)
+        print("Full reindexing took {}".format(str(reindexing_time)))
 
 
